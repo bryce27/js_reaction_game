@@ -1,0 +1,116 @@
+<html>
+<head>
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript" src="jquery-1.11.2.js"></script>
+	<!-- <script type="text/javascript" src="script.js"></script> -->
+
+</head>
+<body>
+	<div id="timeDiv">
+		<div id="reactionTime">Reaction Time: <span></span></div>
+		<div id="clickCounter">Number of Clicks: <span></span></div>
+		<div id="averageTime">Average Time: <span></span></div>
+	</div> 
+
+	<div id="container">
+		<div id="Box" class="normalPosition"></div>
+	</div>
+
+	<script type="text/javascript">
+
+	var Box = document.getElementById("Box");
+	var createdTime, timeClicked, reactionTime;
+	var scores = []; // will hold the reactionTimes
+	var numOfClicks = 0;
+
+	function makeBox() {
+		var time = Math.random();
+
+		time = (time * 2000);
+		//console.log(time);
+
+		setTimeout(function() {
+			Box.style.display="block";
+			createdTime = Date.now();
+		}, time);
+	}
+
+	function changeColor(){
+		var color = getRandomColor();
+		Box.style.backgroundColor = color;
+	}
+
+	function getRandomColor() {
+		var letters = '0123456789ABCDEF'.split('');
+		var color = '#';
+		for (var i = 0; i < 6; i ++){
+			color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
+	}
+
+	function getRandomPosition(){
+		var x = $(document).width();
+		var y = $(document).height();
+		var randomX = Math.abs((Math.random()*x) - 300);
+		var randomY = Math.abs((Math.random()*y) - 300);
+		return [randomX, randomY];
+	}
+
+	function changePosition() {
+		var xy = getRandomPosition();
+		var x = xy[0];
+		// the 20 is to make room for the div above it
+		var y = xy[1];
+		Box.style.marginLeft= x + 'px';
+		Box.style.marginTop = y + 'px';
+	}
+
+	function changeShape() {
+		var randNum = Math.floor(Math.random()*2);
+		if (randNum == 0) $('#Box').addClass("circle");
+		else $('#Box').removeClass("circle").addClass("square");
+	}
+
+	function updateScores() {
+		timeClicked = Date.now();
+		// divide by 1000 to get seconds
+		reactionTime = (timeClicked - createdTime) / 1000;
+		scores.push(reactionTime);
+
+		// loop through array to calculate total of all reactionTimes
+		var total = 0;
+		for (var i=0; i < scores.length; i++){
+			total+= scores[i];
+		}
+		// calculate average
+		var average = total / scores.length;
+		// round to thousandth place
+		average = Math.ceil(average * 1000) / 1000;
+
+		$('#reactionTime span').html(reactionTime + ' seconds');
+		$('#averageTime span').html(average + ' seconds');
+	}
+
+	function updateClicks() {
+		numOfClicks++;
+		$('#clickCounter span').html(numOfClicks);
+	}
+
+	Box.onclick=function() {
+		this.style.display="none";
+		updateScores();
+		updateClicks();
+		changeColor();
+		changeShape();
+		changePosition();
+		makeBox();
+	}
+
+	// run makeBox at the very beginning
+	makeBox();
+	
+	</script>
+
+</body>
